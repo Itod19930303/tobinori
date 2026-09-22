@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><title>トビノリ - 経路案内結果</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700;800&amp;family=Noto+Sans+JP:wght@400;500;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#faf8ff;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "background": "#faf8ff", "surface-container": "#eaedff", "on-background": "#131b2e", "on-error-container": "#93000a", "on-tertiary-fixed": "#001f28", "on-tertiary": "#ffffff", "primary-container": "#0f62fe", "primary": "#004ccd", "on-secondary-fixed": "#351000", "surface-container-low": "#f2f3ff", "on-secondary-container": "#572000", "surface-container-lowest": "#ffffff", "secondary-fixed": "#ffdbcc", "on-primary": "#ffffff", "surface-container-highest": "#dae2fd", "outline": "#737687", "on-surface-variant": "#424656", "on-tertiary-fixed-variant": "#004e60", "tertiary": "#006076", "primary-fixed-dim": "#b4c5ff", "on-error": "#ffffff", "secondary-container": "#fe6b00", "on-primary-fixed-variant": "#003da9", "outline-variant": "#c3c6d8", "inverse-on-surface": "#eef0ff", "tertiary-container": "#007a95", "surface-dim": "#d2d9f4", "on-primary-fixed": "#00174c", "on-secondary-fixed-variant": "#7a3000", "inverse-primary": "#b4c5ff", "on-primary-container": "#f3f3ff", "tertiary-fixed": "#b6ebff", "on-tertiary-container": "#e6f7ff", "surface-variant": "#dae2fd", "surface-bright": "#faf8ff", "error-container": "#ffdad6", "error": "#ba1a1a", "on-secondary": "#ffffff", "on-surface": "#131b2e", "secondary": "#a04100", "surface-container-high": "#e2e7ff", "surface": "#faf8ff", "tertiary-fixed-dim": "#47d6ff", "primary-fixed": "#dbe1ff", "inverse-surface": "#283044", "secondary-fixed-dim": "#ffb693", "surface-tint": "#0052dd" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "layout-gutter": "1rem", "space-2xs": "0.25rem", "space-md": "1rem", "space-sm": "0.75rem", "layout-margin-desktop": "2rem", "space-lg": "1.5rem", "space-2xl": "3rem", "space-xs": "0.5rem", "space-xl": "2rem", "layout-margin-tablet": "1.5rem", "layout-margin-mobile": "1rem" }, fontFamily: { "headline-lg": ["Noto Sans JP", "Noto Sans"], "headline-md": ["Noto Sans JP", "Noto Sans"], "body-lg": ["Noto Sans JP", "Noto Sans"], "headline-sm": ["Noto Sans JP", "Noto Sans"], "body-sm": ["Noto Sans JP", "Noto Sans"], "label-code-md": ["JetBrains Mono"], "label-code-lg": ["JetBrains Mono"], "body-md": ["Noto Sans JP", "Noto Sans"], "display-time-mobile": ["JetBrains Mono"], "display-time-lg": ["JetBrains Mono"], "label-code-sm": ["JetBrains Mono"] }, fontSize: { "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "700" }], "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "500" }], "headline-sm": ["18px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "700" }], "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "400" }], "label-code-md": ["13px", { lineHeight: "16px", letterSpacing: "-0.01em", fontWeight: "600" }], "label-code-lg": ["16px", { lineHeight: "20px", letterSpacing: "-0.02em", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }], "display-time-mobile": ["36px", { lineHeight: "40px", letterSpacing: "-0.03em", fontWeight: "800" }], "display-time-lg": ["48px", { lineHeight: "52px", letterSpacing: "-0.04em", fontWeight: "800" }], "label-code-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "600" }] } } } }</script></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary selection:text-on-primary"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-layout-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs"><span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span></span><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">トビノリ</span></div><div class="flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-code-sm text-label-code-sm"><span class="material-symbols-outlined text-[14px] text-tertiary">my_location</span><span class="tracking-tight truncate max-w-[130px]">渋谷駅付近</span></div></div><div class="flex items-center gap-space-xs"><span class="hidden">Search</span><img alt="トビノリ" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBymUZEiCTGGAbCp2lrUbGa-3THKDexwGHSOhXRsTkFgVcmRjwyYCVbLPMikhWSt9J4X4RAfr6tc8gSAwPFAZnbr1zyGFu0qL1Jsmpn_4zt74y5FrXKFQ7lHh985KHtkLBbCArM2cby2v-SNuVUBXqIiePDEU4OWhesctjnkLN9Zx87dhnosKR9at6_Rd0EJkU6aifw8TP8ypCiLESyle-qgViGJi_hLYsiL9oYrZddBB3i8MsIG_el"></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface"><div class="flex flex-col w-full">
+<section class="px-layout-gutter pt-space-xs pb-space-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container text-on-primary font-headline-sm text-body-sm shadow-sm">
+<span class="material-symbols-outlined text-[16px] animate-pulse" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="tracking-wide">最速ルート（1件完結表示）</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code-sm text-label-code-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary-container animate-ping"></span>
+<span class="">LIVE測位中</span>
+</div>
+</div>
+<!-- Hero Card -->
+<div class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-md flex flex-col gap-space-sm relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-body-md text-body-md text-on-surface-variant">所要時間</span>
+<span class="font-display-time-mobile text-display-time-mobile text-primary tracking-tight">23</span>
+<span class="font-headline-sm text-headline-sm text-primary">分</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-bold">18:42 <span class="text-primary mx-0.5">➜</span> 19:05</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">乗換 1回 / IC ¥209</span>
+</div>
+</div>
+<!-- Live Urgency Countdown Bar -->
+<div class="w-full rounded-lg bg-surface-container-high p-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface-variant">発車まで残り時間</span>
+<span class="font-label-code-md text-label-code-md text-secondary font-bold flex items-center gap-1">
+<span id="countdown-timer" class="">00:00</span>
+<span class="text-body-sm font-normal text-secondary">(急ぎ足推奨)</span>
+</span>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-lowest text-primary font-headline-sm text-body-sm shadow-sm flex items-center gap-1 active:scale-95 transition-transform" id="alarm-toggle">
+<span class="material-symbols-outlined text-[16px]">notifications_active</span>
+<span class="">アラーム</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Interactive Minimal Modern Transit Map Card -->
+<section class="px-layout-gutter pb-space-sm">
+<div class="relative w-full h-48 rounded-xl overflow-hidden shadow-sm bg-surface-container-highest">
+<!-- Desaturated Transit Grid SVG Backdrop -->
+<div class="w-full h-full bg-cover bg-center" data-location="Tokyo Station, Japan" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDj9ii4TgZ_EV-MAoaUsP_pYJ1RuBDp7c8kTiDRk-rph1oSQ86XqfxcIf4iRhdZmyKwiaOLuDYV5jDefC7RdUp-3gFvvcuYwTGre07Ksj8m9cUCz0wCYp2nMphC3tlVDq6F-qqh_Pa20D75u7IXqr5oRt1c0GIvwY7oN4ZHiYfqnhY5DZS9ycFKMdPHtiGxmKW0EiPv9Qz8ivSqd6-6tZrGQWJuQKaPABdRLaUFaW6TwBq01zUy4SwY')"></div>
+<!-- Vector Route Path Overlay -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 360 192">
+<defs>
+<linearGradient id="routeGlow" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#004ccd" stop-opacity="0.9"></stop>
+<stop offset="65%" stop-color="#0f62fe" stop-opacity="1"></stop>
+<stop offset="100%" stop-color="#47d6ff" stop-opacity="0.9"></stop>
+</linearGradient>
+<filter height="140%" id="neonBlur" width="140%" x="-20%" y="-20%">
+<feGaussianBlur result="blur" stdDeviation="3"></feGaussianBlur>
+<feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+</filter>
+</defs>
+<path d="M 52 142 C 110 142, 140 100, 220 84 S 290 52, 316 46" opacity="0.3" stroke="#004ccd" stroke-linecap="round" stroke-width="8"></path>
+<path d="M 52 142 C 110 142, 140 100, 220 84 S 290 52, 316 46" filter="url(#neonBlur)" stroke="url(#routeGlow)" stroke-dasharray="6 3" stroke-linecap="round" stroke-width="4"></path>
+</svg>
+<!-- Pin: Shibuya (Origin) -->
+<div class="absolute left-8 bottom-8 flex flex-col items-center pointer-events-none">
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest text-on-surface font-label-code-sm text-label-code-sm shadow-md font-bold mb-1">渋谷駅</span>
+<div class="relative flex items-center justify-center">
+<span class="w-4 h-4 rounded-full bg-primary animate-ping absolute opacity-60"></span>
+<span class="w-3.5 h-3.5 rounded-full bg-primary border-2 border-surface-container-lowest"></span>
+</div>
+</div>
+<!-- Pin: Transfer Node (Shinbashi) -->
+<div class="absolute left-[58%] top-[38%] flex flex-col items-center pointer-events-none">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-code-sm text-[10px] shadow-sm mb-1">新橋駅 (乗換)</span>
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary border-2 border-surface-container-lowest"></div>
+</div>
+<!-- Pin: Tokyo (Destination) -->
+<div class="absolute right-7 top-6 flex flex-col items-center pointer-events-none">
+<span class="px-2 py-0.5 rounded bg-primary text-on-primary font-label-code-sm text-label-code-sm shadow-md font-bold mb-1">東京駅</span>
+<div class="w-4 h-4 rounded-full bg-secondary-container flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[10px]">flag</span>
+</div>
+</div>
+<!-- Map Floating Utility Controls -->
+<div class="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+<button class="px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code-sm text-label-code-sm shadow-sm flex items-center gap-1 active:scale-95">
+<span class="material-symbols-outlined text-[14px]">fullscreen</span>
+<span class="">全画面地図</span>
+</button>
+</div>
+<div class="absolute bottom-2.5 left-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-inverse-surface/85 backdrop-blur text-inverse-on-surface font-label-code-sm text-[11px] flex items-center gap-1.5 shadow-sm max-w-fit"><span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim shrink-0">navigation</span><span class="truncate">銀座線混雑回避 ➜ 山手線外回りが最速着</span></div>
+</div>
+</section>
+<!-- Step-by-Step Route Timeline -->
+<section class="px-layout-gutter pb-space-lg flex flex-col">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">行程ステップ詳細</span>
+<span class="font-body-sm text-body-sm text-tertiary font-bold">1本前 / 1本後 ＞</span>
+</div>
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-0">
+<!-- Step 1: Origin Shibuya -->
+<div class="flex gap-space-sm relative">
+<div class="flex flex-col items-center">
+<div class="w-4 h-4 rounded-full bg-primary flex items-center justify-center mt-1 z-10">
+<span class="w-1.5 h-1.5 rounded-full bg-on-primary"></span>
+</div>
+<div class="w-1 flex-1 bg-primary rounded-full"></div>
+</div>
+<div class="flex-1 pb-space-md min-w-0">
+<div class="flex items-baseline justify-between">
+<div class="flex items-baseline gap-2">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-bold">18:42</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">渋谷駅</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-code-sm text-label-code-sm font-bold">3番線発</span>
+</div>
+<div class="mt-2 p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-[#99CC00] text-on-surface font-label-code-sm text-label-code-sm font-bold">JY 山手線</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">外回り・品川・東京方面</span>
+</div>
+<div class="flex items-center gap-1.5 text-tertiary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">directions_subway</span>
+<span class="font-bold">推奨号車: 4号車・8号車</span>
+<span class="text-on-surface-variant text-[11px]">(新橋乗り換え階段直結)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2: Transfer Shinbashi -->
+<div class="flex gap-space-sm relative">
+<div class="flex flex-col items-center">
+<div class="w-4 h-4 rounded-full bg-surface-container-lowest border-4 border-tertiary flex items-center justify-center mt-1 z-10"></div>
+<div class="w-1 flex-1 bg-secondary-container rounded-full"></div>
+</div>
+<div class="flex-1 pb-space-md min-w-0">
+<div class="flex items-baseline justify-between">
+<div class="flex items-baseline gap-2">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-bold">19:00</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">新橋駅</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-code-sm text-label-code-sm">着 4番線</span>
+</div>
+<div class="my-2 py-1.5 px-3 rounded-full bg-surface-container-highest flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary">transfer_within_a_station</span>
+<span class="">ホーム間移動 (徒歩2分・フラット移動)</span>
+</div>
+<span class="font-label-code-sm text-label-code-sm text-primary font-bold">乗換時間 2分</span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div class="flex items-baseline gap-2">
+<span class="font-label-code-lg text-label-code-lg text-secondary font-bold">19:02</span>
+<span class="font-body-md text-body-md text-on-surface">新橋駅発</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-label-code-sm text-label-code-sm font-bold">5番線発</span>
+</div>
+<div class="mt-2 p-2 rounded-lg bg-surface-container-low flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0 flex-1"><span class="px-2 py-0.5 rounded bg-[#fe6b00] text-on-primary font-label-code-sm text-label-code-sm font-bold shrink-0">JT 東海道線</span><span class="font-body-sm text-body-sm text-on-surface truncate">上野東京ライン・高崎行</span></div><span class="font-label-code-sm text-label-code-sm text-on-surface-variant shrink-0">1駅 (3分)</span></div>
+</div>
+</div>
+<!-- Step 3: Destination Tokyo -->
+<div class="flex gap-space-sm relative">
+<div class="flex flex-col items-center">
+<div class="w-4 h-4 rounded-full bg-secondary-container flex items-center justify-center mt-1 z-10">
+<span class="w-2 h-2 rounded-full bg-on-primary"></span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between">
+<div class="flex items-baseline gap-2">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-bold">19:05</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">東京駅</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-code-sm text-label-code-sm font-bold">7番線着</span>
+</div>
+<p class="mt-1 font-body-sm text-body-sm text-on-surface-variant">丸の内中央口・八重洲地下街方面改札至近</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Persistent Sticky Primary Decision Actions -->
+<section class="sticky bottom-0 z-40 bg-surface/90 backdrop-blur-md px-layout-gutter py-space-sm shadow-[0_-4px_16px_rgba(0,0,0,0.06)] flex flex-col gap-2">
+<div class="flex gap-2">
+<button class="flex-1 py-3 px-space-md rounded-xl bg-primary text-on-primary font-headline-sm text-body-lg flex items-center justify-center gap-2 shadow-md active:translate-y-0.5 transition-all" id="start-nav-btn">
+<span class="material-symbols-outlined text-[22px]">directions_run</span>
+<span class="">案内スタート</span>
+</button>
+<button aria-label="経路を共有" class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button aria-label="お気に入りに保存" class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</div>
+</section>
+</div>
+<script>
+  // Countdown interaction demo
+  (function() {
+    let totalSeconds = 225; // 3 min 45 sec
+    const timerElem = document.getElementById('countdown-timer');
+    if (timerElem) {
+      setInterval(() => {
+        if (totalSeconds > 0) {
+          totalSeconds--;
+          const m = Math.floor(totalSeconds / 60);
+          const s = totalSeconds % 60;
+          timerElem.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        }
+      }, 1000);
+    }
+
+    const startBtn = document.getElementById('start-nav-btn');
+    if (startBtn) {
+      startBtn.addEventListener('click', () => {
+        startBtn.classList.toggle('bg-primary');
+        startBtn.classList.toggle('bg-secondary-container');
+        const spanText = startBtn.querySelector('span:last-child');
+        if (spanText) {
+          spanText.textContent = spanText.textContent === '案内スタート' ? 'ナビゲーション中 (タップで終了)' : '案内スタート';
+        }
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-16 px-space-xs"><a aria-current="page" class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] h-full gap-0.5 transition-colors text-primary font-bold" data-path="search" href="#"><span class="material-symbols-outlined text-[22px]">near_me</span><span class="font-body-sm text-body-sm">最速検索</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] h-full gap-0.5 text-on-surface-variant transition-colors" data-path="favorites-and-history" href="#"><span class="material-symbols-outlined text-[22px]">bookmark_added</span><span class="font-body-sm text-body-sm">履歴・保存</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] h-full gap-0.5 text-on-surface-variant transition-colors" data-path="transit-status" href="#"><span class="material-symbols-outlined text-[22px]">warning</span><span class="font-body-sm text-body-sm">運行情報</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] h-full gap-0.5 text-on-surface-variant transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-body-sm text-body-sm">設定</span></a></div></nav>
+
+
+
+</body></html>

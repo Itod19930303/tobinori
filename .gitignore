@@ -1,0 +1,18 @@
+# Claude Code local-only files
+.claude/settings.local.json
+.claude/.headroom_wrap_marker.json
+.claude/.headroom_wrap_owners.json
+.claude/.headroom_wrap_settings.lock
+
+# Flutter/Dart
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+**/build/
+**/ios/Flutter/.last_build_id
+
+# Secrets
+**/*.env
+**/key.properties
