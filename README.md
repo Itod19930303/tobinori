@@ -10,6 +10,7 @@
 
 - [要件定義書](docs/requirements.md)
 - [アーキテクチャ設計・技術選定](docs/architecture.md)
+- [開発ハーネス仕様書（エージェント構成・TDD/Gitワークフロー）](docs/development-harness.md)
 - [デザインシステム](tobinori/stitch_/precision_transit_speed/DESIGN.md)
 
 ## 技術スタック
