@@ -28,9 +28,12 @@
 ## 開発の進め方
 
 - GitHub Issue単位（機能要件 F-01〜F-04）で実装を進める。
-- 各Issueは「詳細設計 → （承認ゲート）→ TDD実装（Red → Green）→ 3種レビュー → （全指摘解消ゲート）→ コミット/PR」の流れで進める。`implement-issue` スキルでこの流れをワンコマンドで実行できる。
+- 各Issueは「設計フェーズ（`design-issue`スキル）→ 実装フェーズ（`implement-issue`スキル）」の2段階で進める。
+  - `design-issue`: ブランチ作成 → 詳細設計書作成 → 仕様の抜け漏れを自動レビュー → ユーザーとの対話で設計確定
+  - `implement-issue`: 設計承認済みを前提に、TDD実装（Red → Green）→ 3種レビュー → （全指摘解消ゲート）→ コミット/PR
 - `.claude/agents/` に実装・レビュー用のカスタムエージェントを用意している。
   - `flutter-detailed-design`: Issue単位の詳細設計書を作成
+  - `detailed-design-review`: 詳細設計書の仕様抜け漏れを自動レビュー
   - `flutter-test-writer`: テスト作成（Red）
   - `flutter-feature-implementation`: 実装（Green）
   - `flutter-code-review`: コード品質・アーキテクチャ・セキュリティレビュー
