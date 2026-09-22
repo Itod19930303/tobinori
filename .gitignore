@@ -16,3 +16,12 @@
 # Secrets
 **/*.env
 **/key.properties
+
+# FVM Version Cache
+.fvm/
+
+# IDE
+.idea/
+
+# Test coverage
+coverage/

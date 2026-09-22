@@ -80,6 +80,14 @@ GitHub Issue（機能要件 F-XX）
 - **spec-compliance-review**: 要件定義書との「仕様」の一致
 - **flutter-ux-review**: 実際に見える「UI/UX」の良し悪し
 
+### 詳細設計書の文章スタイル
+
+`flutter-detailed-design` が作成する詳細設計書（`docs/design/issue-<番号>-*.md`）は、後続エージェント（`flutter-test-writer`等）が読み取れることに加えて、**開発者本人が読んでも内容を理解できること**を満たす必要がある。以下を満たすこと。
+
+- 長い一文に情報を詰め込まず、適度に改行・箇条書きを使う。
+- 専門用語（例: Riverpod、embed、sealed class等）を使う場合は、初出箇所で一言だけ補足する（例:「Riverpod（状態管理用ライブラリ）」）。
+- 1つの項目に複数の論点が混ざる場合は、箇条書きで論点ごとに分ける。
+
 ## 4. TDD・カバレッジ方針
 
 - Red → Green → Refactor の順で進める。`flutter-test-writer` が先にテストを書き、`flutter-feature-implementation` はそのテストを通すことを目的に実装する。
@@ -158,13 +166,13 @@ gh pr create --title "F-01 現在地取得" --body "Closes #1
 ## 6. 開発環境
 
 - 実装言語・フレームワーク: Flutter（Dart）
-- **現時点でこの開発機にはFlutter SDK未インストール**（2026-09-22時点、実装着手前のため保留中）
-- バージョン管理方針: `fvm`（Flutter Version Management）でプロジェクト単位にFlutter SDKバージョンを固定する方針（導入は実装着手時に行う）
+- Flutter SDKセットアップ済み（2026-09-22、`fvm`でstableチャンネルに固定）
+- バージョン管理方針: `fvm`（Flutter Version Management）でプロジェクト単位にFlutter SDKバージョンを固定（`.fvmrc`で管理）
 - コンテナ化（Docker）は採用しない
   - 理由: 実機（Android）でのUSBデバッグ・GPUアクセスとの相性が悪く、iOSビルドはmacOSが必須なためDockerでは解決できないこと、個人開発の規模でコンテナ化のメリットが薄いことから見送り。SDKバージョンの統一のみ`fvm`で対応する。
 
 ## 7. 今後のTODO
 
-- [ ] Flutter SDK / `fvm` のセットアップ（実装着手時）
-- [ ] `flutter create` によるプロジェクト初期化（`docs/architecture.md` のレイヤー構成に合わせたディレクトリ構成で作成）
+- [x] Flutter SDK / `fvm` のセットアップ
+- [x] `flutter create` によるプロジェクト初期化
 - [ ] `implement-issue` スキルでIssue #1（F-01 現在地取得）からTDDで実装着手
