@@ -166,13 +166,13 @@ gh pr create --title "F-01 現在地取得" --body "Closes #1
 ## 6. 開発環境
 
 - 実装言語・フレームワーク: Flutter（Dart）
-- **現時点でこの開発機にはFlutter SDK未インストール**（2026-09-22時点、実装着手前のため保留中）
-- バージョン管理方針: `fvm`（Flutter Version Management）でプロジェクト単位にFlutter SDKバージョンを固定する方針（導入は実装着手時に行う）
+- Flutter SDKセットアップ済み（2026-09-22、`fvm`でstableチャンネルに固定）
+- バージョン管理方針: `fvm`（Flutter Version Management）でプロジェクト単位にFlutter SDKバージョンを固定（`.fvmrc`で管理）
 - コンテナ化（Docker）は採用しない
   - 理由: 実機（Android）でのUSBデバッグ・GPUアクセスとの相性が悪く、iOSビルドはmacOSが必須なためDockerでは解決できないこと、個人開発の規模でコンテナ化のメリットが薄いことから見送り。SDKバージョンの統一のみ`fvm`で対応する。
 
 ## 7. 今後のTODO
 
-- [ ] Flutter SDK / `fvm` のセットアップ（実装着手時）
-- [ ] `flutter create` によるプロジェクト初期化（`docs/architecture.md` のレイヤー構成に合わせたディレクトリ構成で作成）
+- [x] Flutter SDK / `fvm` のセットアップ
+- [x] `flutter create` によるプロジェクト初期化
 - [ ] `implement-issue` スキルでIssue #1（F-01 現在地取得）からTDDで実装着手
