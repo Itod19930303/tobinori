@@ -80,6 +80,14 @@ GitHub Issue（機能要件 F-XX）
 - **spec-compliance-review**: 要件定義書との「仕様」の一致
 - **flutter-ux-review**: 実際に見える「UI/UX」の良し悪し
 
+### 詳細設計書の文章スタイル
+
+`flutter-detailed-design` が作成する詳細設計書（`docs/design/issue-<番号>-*.md`）は、後続エージェント（`flutter-test-writer`等）が読み取れることに加えて、**開発者本人が読んでも内容を理解できること**を満たす必要がある。以下を満たすこと。
+
+- 長い一文に情報を詰め込まず、適度に改行・箇条書きを使う。
+- 専門用語（例: Riverpod、embed、sealed class等）を使う場合は、初出箇所で一言だけ補足する（例:「Riverpod（状態管理用ライブラリ）」）。
+- 1つの項目に複数の論点が混ざる場合は、箇条書きで論点ごとに分ける。
+
 ## 4. TDD・カバレッジ方針
 
 - Red → Green → Refactor の順で進める。`flutter-test-writer` が先にテストを書き、`flutter-feature-implementation` はそのテストを通すことを目的に実装する。

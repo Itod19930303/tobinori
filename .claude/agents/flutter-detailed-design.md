@@ -17,6 +17,7 @@ tools: Read, Write, Edit, Glob, Grep
 - `docs/requirements.md` の該当機能要件（F-XX）と `docs/architecture.md` のレイヤー構成・技術選定を必ず読み、それらと矛盾しない設計にする。
 - 既存の実装・既存の詳細設計書（`docs/design/` 配下）がある場合は読み、命名規則・既存クラスとの整合性を保つ。
 - 個人開発・小規模プロジェクトという前提を踏まえ、過度に抽象的な設計（不要なインターフェース分離、DIコンテナ等）は避ける。
+- 設計書は後続エージェントだけでなく開発者本人も読む。長い一文に詰め込まず改行・箇条書きを使い、専門用語（Riverpod、embed、sealed class等）は初出時に一言だけ補足する（`docs/development-harness.md` 3章「詳細設計書の文章スタイル」参照）。
 
 ## 出力先
 
