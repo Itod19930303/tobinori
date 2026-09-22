@@ -52,6 +52,15 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+  # モック用ライブラリ（TDDのユニットテストで使用）
+  mocktail: ^1.0.4
+
+  # LocationRepositoryのテストでGeolocatorPlatform.instanceをモック化するために使用
+  geolocator_platform_interface: ^4.2.4
+
+  # LocationRepositoryのテストでMockPlatformInterfaceMixinを使用するために必要
+  plugin_platform_interface: ^2.1.8
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

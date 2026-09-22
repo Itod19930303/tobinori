@@ -1,30 +1,74 @@
-// This is a basic Flutter widget test.
+// F-01（現在地取得）の起動時挙動を確認する最小限のWidgetテスト。
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// 設計書: docs/design/issue-1-current-location.md 2章
+// アプリ起動時に`currentLocationProvider`経由で現在地取得処理
+// （`fetchCurrentLocation`相当）が呼ばれ、ProviderScope配下で
+// `TobinoriApp`が正しく動作することを確認する。
 
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:tobinori/data/location/location_repository.dart';
+import 'package:tobinori/domain/location/get_current_location_usecase.dart';
+import 'package:tobinori/domain/location/location_point.dart';
 import 'package:tobinori/main.dart';
+import 'package:tobinori/presentation/widgets/location_status_banner.dart';
+import 'package:tobinori/providers/location/current_location_provider.dart';
+
+/// テスト用のフェイクUseCase。呼び出し回数を記録し、
+/// 現在地取得成功結果を即座に返す。
+class _FakeGetCurrentLocationUseCase extends GetCurrentLocationUseCase {
+  _FakeGetCurrentLocationUseCase() : super(LocationRepository());
+
+  int callCount = 0;
+
+  @override
+  Future<LocationResult> call() async {
+    callCount++;
+    return const LocationSuccess(
+      LocationPoint(latitude: 35.0, longitude: 139.0),
+    );
+  }
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('起動時にfetchCurrentLocation相当の処理が1回呼ばれること', (
+    WidgetTester tester,
+  ) async {
+    final fakeUseCase = _FakeGetCurrentLocationUseCase();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          getCurrentLocationUseCaseProvider.overrideWithValue(fakeUseCase),
+        ],
+        child: const TobinoriApp(),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // initState直後（microtask経由）の呼び出しを反映させる。
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(fakeUseCase.callCount, 1);
+  });
+
+  testWidgets('ProviderScope配下でLocationStatusBannerが表示されること', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          getCurrentLocationUseCaseProvider.overrideWithValue(
+            _FakeGetCurrentLocationUseCase(),
+          ),
+        ],
+        child: const TobinoriApp(),
+      ),
+    );
+
+    expect(find.byType(LocationStatusBanner), findsOneWidget);
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LocationStatusBanner), findsOneWidget);
   });
 }

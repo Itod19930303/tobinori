@@ -19,3 +19,9 @@
 
 # FVM Version Cache
 .fvm/
+
+# IDE
+.idea/
+
+# Test coverage
+coverage/
