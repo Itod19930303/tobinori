@@ -4,7 +4,7 @@
 
 ## 1. 全体フロー
 
-Issue（機能要件単位）ごとに、以下の流れで実装を進める。
+Issue（機能要件単位）ごとに、以下の流れで実装を進める。`implement-issue` スキルを使うと、この一連の流れをワンコマンドで進行できる（2章参照）。
 
 ```
 GitHub Issue（機能要件 F-XX）
@@ -13,32 +13,53 @@ GitHub Issue（機能要件 F-XX）
 ブランチ作成（main から issue-<番号>-<概要>）
    │
    ▼
-① flutter-test-writer      … 失敗するテストを先に書く（Red）
+① flutter-detailed-design  … 詳細設計書を作成（docs/design/issue-<番号>-*.md）
    │
    ▼
-② flutter-feature-implementation … テストを通す実装（Green）
+【ゲート1】ユーザーが詳細設計の内容を確認し、承認する
+   （未決定事項の確認・修正指示があれば設計を更新して再提示。承認が出るまで実装に進まない）
+   │
+   ▼
+② flutter-test-writer      … 詳細設計書のテスト観点に基づき、失敗するテストを先に書く（Red）
+   │
+   ▼
+③ flutter-feature-implementation … 詳細設計書のクラス設計に沿ってテストを通す実装（Green）
    │
    ▼
 （必要なら リファクタリング。テストが通り続けることを確認しながら行う）
    │
    ▼
-③ flutter-code-review      … コード品質・アーキ・セキュリティのレビュー
-④ spec-compliance-review   … 要件定義書との仕様整合性レビュー
-⑤ flutter-ux-review        … UI/UXレビュー（画面がある場合。スクリーンショットベース）
+④ flutter-code-review      … コード品質・アーキ・セキュリティのレビュー
+⑤ spec-compliance-review   … 要件定義書との仕様整合性レビュー
+⑥ flutter-ux-review        … UI/UXレビュー（画面がある場合。スクリーンショットベース）
    │
    ▼
-コミット（メッセージ末尾に #<issue番号>）→ push → PR作成 → マージ
+【ゲート2】重大な指摘がゼロになるまで、修正 → 再レビューを繰り返す
+   （重大な指摘が残っている間はコミットしない）
+   │
+   ▼
+コミット（メッセージ末尾に #<issue番号>）→ push → PR作成（Closes #<issue番号>）
 ```
 
-## 2. カスタムエージェント一覧
+## 2. ワンコマンド実行（`implement-issue` スキル）
 
-すべて `.claude/agents/` 配下に定義。呼び出す際は、対応する作業内容（テスト作成・実装・各種レビュー）を依頼すれば、該当エージェントが自動的に選択されるほか、エージェント名を明示して呼び出すこともできる。
+`.claude/skills/implement-issue/` に定義。Issue番号を伝えて「issue #1を実装して」のように依頼すると、上記フロー全体（詳細設計 → ゲート1 → TDD実装 → レビュー → ゲート2 → コミット/push/PR）を通しで進行する。
+
+- **ゲート1（設計承認）**: 詳細設計書の内容と「未決定事項」をユーザーに提示し、明示的な承認が得られるまで実装フェーズに進まない。
+- **ゲート2（レビュー通過）**: 3種のレビューで「重大」な指摘が残っている間はコミットしない。修正・再レビューを指摘がなくなるまで繰り返す。
+
+いずれのゲートも、各フェーズの節目でユーザーに状況を報告したうえで判断を仰ぐため、「ワンコマンド＝無人で最後まで進む」という意味ではない。
+
+## 3. カスタムエージェント一覧
+
+すべて `.claude/agents/` 配下に定義。呼び出す際は、対応する作業内容（設計・テスト作成・実装・各種レビュー）を依頼すれば、該当エージェントが自動的に選択されるほか、エージェント名を明示して呼び出すこともできる。`implement-issue` スキルを使う場合は、これらは自動的に順番通り呼び出される。
 
 | エージェント名 | 役割 | 使用ツール | 呼び出しタイミング |
 |---|---|---|---|
 | `requirements-definition` | ヒアリング内容から要件定義書を構造化・更新 | Read, Write, Edit, Glob, Grep | 要件ヒアリング時（`requirements-definition` skillから呼び出し） |
 | `architecture-tech-selection` | 要件定義書からアーキテクチャ設計・技術選定を実施 | Read, Write, Edit, Glob, Grep, WebSearch | 要件定義完了後、明示的に呼び出し |
-| `flutter-test-writer` | TDDのRedフェーズ。テストを先に作成（ユニット・Widget） | Read, Write, Edit, Glob, Grep, Bash | 各Issue着手時、実装前に最初に呼び出し |
+| `flutter-detailed-design` | Issue単位の詳細設計書を作成（画面構成・クラス設計・状態遷移・API入出力・異常系・テスト観点） | Read, Write, Edit, Glob, Grep | 各Issue着手時、実装前に最初に呼び出し。ここで作った設計書をゲート1でユーザーが承認する |
+| `flutter-test-writer` | TDDのRedフェーズ。詳細設計書のテスト観点に基づきテストを先に作成（ユニット・Widget） | Read, Write, Edit, Glob, Grep, Bash | ゲート1通過後 |
 | `flutter-feature-implementation` | TDDのGreenフェーズ。既存の失敗テストを通す実装 | Read, Write, Edit, Glob, Grep, Bash, WebSearch | テスト作成後 |
 | `flutter-code-review` | コード品質・アーキ整合性・Riverpodの使い方・セキュリティ（秘密情報/端末権限/インテント連携の値検証/ログ）・デザインシステム準拠（コード上の実装）・カバレッジをレビュー | Read, Glob, Grep, Bash | 実装後、コミット前 |
 | `spec-compliance-review` | 実装が要件定義書の仕様通りかを照合（機能・非機能要件の充足、スコープ外機能の混入、独自解釈の検出） | Read, Glob, Grep, Bash | 実装後、コミット前 |
@@ -50,7 +71,7 @@ GitHub Issue（機能要件 F-XX）
 - **spec-compliance-review**: 要件定義書との「仕様」の一致
 - **flutter-ux-review**: 実際に見える「UI/UX」の良し悪し
 
-## 3. TDD・カバレッジ方針
+## 4. TDD・カバレッジ方針
 
 - Red → Green → Refactor の順で進める。`flutter-test-writer` が先にテストを書き、`flutter-feature-implementation` はそのテストを通すことを目的に実装する。
 - カバレッジ目標: **90%**（ただし一律ではない）
@@ -62,7 +83,7 @@ GitHub Issue（機能要件 F-XX）
   flutter test --coverage
   ```
 
-## 4. Git / GitHub運用
+## 5. Git / GitHub運用
 
 ### 4.1 リポジトリ
 
@@ -125,7 +146,7 @@ gh pr create --title "F-01 現在地取得" --body "Closes #1
 
 `Closes #1` と書くことで、PRマージ時に対応するIssueが自動でクローズされる。
 
-## 5. 開発環境
+## 6. 開発環境
 
 - 実装言語・フレームワーク: Flutter（Dart）
 - **現時点でこの開発機にはFlutter SDK未インストール**（2026-09-22時点、実装着手前のため保留中）
@@ -133,8 +154,8 @@ gh pr create --title "F-01 現在地取得" --body "Closes #1
 - コンテナ化（Docker）は採用しない
   - 理由: 実機（Android）でのUSBデバッグ・GPUアクセスとの相性が悪く、iOSビルドはmacOSが必須なためDockerでは解決できないこと、個人開発の規模でコンテナ化のメリットが薄いことから見送り。SDKバージョンの統一のみ`fvm`で対応する。
 
-## 6. 今後のTODO
+## 7. 今後のTODO
 
 - [ ] Flutter SDK / `fvm` のセットアップ（実装着手時）
 - [ ] `flutter create` によるプロジェクト初期化（`docs/architecture.md` のレイヤー構成に合わせたディレクトリ構成で作成）
-- [ ] Issue #1（F-01 現在地取得）からTDDで実装着手
+- [ ] `implement-issue` スキルでIssue #1（F-01 現在地取得）からTDDで実装着手
