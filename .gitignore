@@ -16,6 +16,9 @@
 # Secrets
 **/*.env
 **/key.properties
+# --dart-define-from-file経由でAPIキー等を注入するための設定ファイル
+# （architecture.md 8.3節）。`env.json.example`をコピーして値を設定して使う。
+env.json
 
 # FVM Version Cache
 .fvm/
