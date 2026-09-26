@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tobinori/presentation/widgets/location_status_banner.dart';
+import 'package:tobinori/presentation/search/search_screen.dart';
 import 'package:tobinori/providers/location/current_location_provider.dart';
 
 void main() {
@@ -36,38 +36,7 @@ class _TobinoriAppState extends ConsumerState<TobinoriApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const _HomePage(),
-    );
-  }
-}
-
-/// F-02（検索画面）着手までの最小限のプレースホルダー画面。
-///
-/// このIssue（F-01）には専用画面がないため（設計書2章）、
-/// 現在地取得状態を表示する`LocationStatusBanner`のみを配置する。
-class _HomePage extends ConsumerWidget {
-  const _HomePage();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final locationState = ref.watch(currentLocationProvider);
-    final notifier = ref.read(currentLocationProvider.notifier);
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('トビノリ')),
-      body: SafeArea(
-        child: Column(
-          children: [
-            LocationStatusBanner(
-              state: locationState,
-              onRefetch: notifier.fetchCurrentLocation,
-              onOpenSettings: () {
-                ref.read(locationRepositoryProvider).openAppSettings();
-              },
-            ),
-          ],
-        ),
-      ),
+      home: const SearchScreen(),
     );
   }
 }

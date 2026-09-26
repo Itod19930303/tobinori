@@ -41,6 +41,12 @@ dependencies:
   # 現在地取得（docs/architecture.md 6.2）
   geolocator: ^13.0.2
 
+  # Routes APIへのHTTP通信（docs/design/issue-2-station-search.md 4.4節・6.1節）
+  http: ^1.6.0
+
+  # オンライン・オフライン判定（docs/design/issue-2-station-search.md 4.2節）
+  connectivity_plus: ^7.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -60,6 +66,9 @@ dev_dependencies:
 
   # LocationRepositoryのテストでMockPlatformInterfaceMixinを使用するために必要
   plugin_platform_interface: ^2.1.8
+
+  # connectivityStatusProviderのテストでConnectivityPlatform.instanceをモック化するために使用
+  connectivity_plus_platform_interface: ^2.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

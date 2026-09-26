@@ -25,6 +25,20 @@
 
 詳細な選定理由は [docs/architecture.md](docs/architecture.md) を参照。
 
+## ローカル動作確認手順（APIキーの設定）
+
+Google Maps Platform Routes APIのAPIキーはコードに直書きせず、`--dart-define-from-file`経由で注入する（`docs/architecture.md` 8.3節）。
+
+1. `env.json.example` をコピーして `env.json` を作成する（`env.json` は `.gitignore` で除外済みでリポジトリにはコミットされない）。
+   ```
+   cp env.json.example env.json
+   ```
+2. `env.json` の `MAPS_API_KEY` の値を、Google Cloud Consoleで発行した実際のAPIキーに書き換える。
+3. 以下のコマンドでアプリを起動する。
+   ```
+   flutter run --dart-define-from-file=env.json
+   ```
+
 ## 開発の進め方
 
 - GitHub Issue単位（機能要件 F-01〜F-04）で実装を進める。
