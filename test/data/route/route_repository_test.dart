@@ -367,4 +367,77 @@ void main() {
       expect(headers['Content-Type'], contains('application/json'));
     });
   });
+
+  // Issue #3 F-03: 乗車駅座標のマッピング（設計書: issue-3-route-guidance.md 5.3節・7章）
+  group('乗車駅座標(departureStopLocation)のマッピング', () {
+    Map<String, dynamic> bodyWithDepartureStop(Map<String, dynamic> stop) => {
+          'routes': [
+            {
+              'duration': '900s',
+              'legs': [
+                {
+                  'steps': [
+                    {
+                      'travelMode': 'TRANSIT',
+                      'staticDuration': '900s',
+                      'transitDetails': {
+                        'stopDetails': {
+                          'departureStop': stop,
+                          'arrivalStop': {'name': '新宿'},
+                        },
+                        'transitLine': {'name': 'JR山手線'},
+                        'headsign': '池袋方面',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        };
+
+    Future<Route?> compute(Map<String, dynamic> body) {
+      when(() => client.post(
+            any(),
+            headers: any(named: 'headers'),
+            body: any(named: 'body'),
+          )).thenAnswer((_) async => jsonResponse(body));
+      return repository.computeRoute(
+        origin: origin,
+        destinationStationName: destinationStationName,
+      );
+    }
+
+    test('departureStop.location.latLngがdepartureStopLocationにマッピングされること',
+        () async {
+      final route = await compute(bodyWithDepartureStop({
+        'name': '渋谷',
+        'location': {
+          'latLng': {'latitude': 35.658, 'longitude': 139.7016},
+        },
+      }));
+
+      expect(
+        route!.steps.single.departureStopLocation,
+        const LocationPoint(latitude: 35.658, longitude: 139.7016),
+      );
+    });
+
+    test('locationが無いレスポンスでも例外にならずnullになること', () async {
+      final route = await compute(bodyWithDepartureStop({'name': '渋谷'}));
+
+      expect(route!.steps.single.departureStopName, '渋谷');
+      expect(route.steps.single.departureStopLocation, isNull);
+    });
+
+    test('locationがMapでない想定外の型でも例外にならずnullになること', () async {
+      final route = await compute(bodyWithDepartureStop({
+        'name': '渋谷',
+        'location': 'invalid',
+      }));
+
+      expect(route!.steps.single.departureStopName, '渋谷');
+      expect(route.steps.single.departureStopLocation, isNull);
+    });
+  });
 }

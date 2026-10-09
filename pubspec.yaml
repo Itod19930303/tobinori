@@ -47,6 +47,10 @@ dependencies:
   # オンライン・オフライン判定（docs/design/issue-2-station-search.md 4.2節）
   connectivity_plus: ^7.3.1
 
+  # 経路案内（F-03）
+  android_intent_plus: ^6.1.0
+  url_launcher: ^6.3.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -153,11 +153,22 @@ class RouteRepositoryImpl implements RouteRepository {
         lineName: transitLine?['name'] as String?,
         headsign: transitDetails?['headsign'] as String?,
         departureStopName: departureStop?['name'] as String?,
+        departureStopLocation: _parseLatLng(departureStop?['location']),
         arrivalStopName: arrivalStop?['name'] as String?,
       );
     }
 
     return RouteStep(type: RouteStepType.walk, duration: duration);
+  }
+
+  LocationPoint? _parseLatLng(Object? location) {
+    if (location is! Map<String, dynamic>) return null;
+    final latLng = location['latLng'];
+    if (latLng is! Map<String, dynamic>) return null;
+    final lat = latLng['latitude'];
+    final lng = latLng['longitude'];
+    if (lat is! num || lng is! num) return null;
+    return LocationPoint(latitude: lat.toDouble(), longitude: lng.toDouble());
   }
 
   Duration _parseDuration(String value) {

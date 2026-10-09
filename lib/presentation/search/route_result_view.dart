@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tobinori/presentation/search/route_guidance_button.dart';
 import 'package:tobinori/presentation/search/route_result_card.dart';
 import 'package:tobinori/providers/route/route_search_provider.dart';
 
@@ -22,9 +23,19 @@ class RouteResultView extends StatelessWidget {
         if (route == null) {
           return _placeholder();
         }
+        final nearestStation = route.nearestStation;
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: RouteResultCard(route: route),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              RouteResultCard(route: route),
+              if (nearestStation != null) ...[
+                const SizedBox(height: 16),
+                RouteGuidanceButton(station: nearestStation),
+              ],
+            ],
+          ),
         );
       case RouteSearchStatus.error:
         return Padding(
