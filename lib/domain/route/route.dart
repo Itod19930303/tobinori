@@ -1,3 +1,6 @@
+import 'package:tobinori/domain/location/location_point.dart';
+import 'package:tobinori/domain/route/nearest_station.dart';
+
 /// 経路ステップの種別。
 ///
 /// 設計書: docs/design/issue-2-station-search.md 4.3節
@@ -19,6 +22,7 @@ class RouteStep {
     this.lineName,
     this.headsign,
     this.departureStopName,
+    this.departureStopLocation,
     this.arrivalStopName,
   });
 
@@ -26,6 +30,7 @@ class RouteStep {
   final String? lineName;
   final String? headsign;
   final String? departureStopName;
+  final LocationPoint? departureStopLocation;
   final String? arrivalStopName;
   final Duration duration;
 
@@ -37,6 +42,7 @@ class RouteStep {
         other.lineName == lineName &&
         other.headsign == headsign &&
         other.departureStopName == departureStopName &&
+        other.departureStopLocation == departureStopLocation &&
         other.arrivalStopName == arrivalStopName &&
         other.duration == duration;
   }
@@ -47,6 +53,7 @@ class RouteStep {
         lineName,
         headsign,
         departureStopName,
+        departureStopLocation,
         arrivalStopName,
         duration,
       );
@@ -54,7 +61,8 @@ class RouteStep {
   @override
   String toString() =>
       'RouteStep(type: $type, lineName: $lineName, headsign: $headsign, '
-      'departureStopName: $departureStopName, arrivalStopName: $arrivalStopName, '
+      'departureStopName: $departureStopName, '
+      'departureStopLocation: $departureStopLocation, arrivalStopName: $arrivalStopName, '
       'duration: $duration)';
 }
 
@@ -71,6 +79,19 @@ class Route {
   final Duration totalDuration;
   final int transferCount;
   final List<RouteStep> steps;
+
+  /// 最初の電車区間の乗車駅。電車区間が無い、または駅名が無い場合は`null`。
+  ///
+  /// 設計書: docs/design/issue-3-route-guidance.md 3.3節
+  NearestStation? get nearestStation {
+    for (final step in steps) {
+      if (step.type != RouteStepType.transit) continue;
+      final name = step.departureStopName;
+      if (name == null || name.isEmpty) return null;
+      return NearestStation(name: name, location: step.departureStopLocation);
+    }
+    return null;
+  }
 
   @override
   bool operator ==(Object other) {
