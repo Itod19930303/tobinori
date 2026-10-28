@@ -28,7 +28,10 @@ import 'package:tobinori/domain/route/search_route_usecase.dart';
 import 'package:tobinori/presentation/search/route_result_card.dart';
 import 'package:tobinori/presentation/search/search_screen.dart';
 import 'package:tobinori/providers/location/current_location_provider.dart';
+import 'package:tobinori/providers/history/search_history_provider.dart';
 import 'package:tobinori/providers/route/route_search_provider.dart';
+
+import '../../helpers/fake_search_history_repository.dart';
 
 class MockSearchRouteUseCase extends Mock implements SearchRouteUseCase {}
 
@@ -53,6 +56,8 @@ void main() {
   );
 
   late MockSearchRouteUseCase useCase;
+  // 実DB（sqflite）はテストで使えないため、全テストで偽Repositoryにoverrideする。
+  late FakeSearchHistoryRepository historyRepository;
 
   setUpAll(() {
     registerFallbackValue(origin);
@@ -60,6 +65,7 @@ void main() {
 
   setUp(() {
     useCase = MockSearchRouteUseCase();
+    historyRepository = FakeSearchHistoryRepository();
   });
 
   Future<void> pumpSearchScreen(
@@ -71,6 +77,7 @@ void main() {
       ProviderScope(
         overrides: [
           searchRouteUseCaseProvider.overrideWithValue(useCase),
+          searchHistoryRepositoryProvider.overrideWithValue(historyRepository),
           currentLocationPointProvider.overrideWithValue(locationPoint),
           connectivityStatusProvider.overrideWith(
             (ref) =>
@@ -227,6 +234,229 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.textContaining('取得できませんでした'), findsOneWidget);
+    });
+  });
+
+  // ---- F-04 検索履歴（設計書: docs/design/issue-4-search-history.md 2章・7章）----
+  group('検索履歴（F-04）', () {
+    const loadFailedText = '履歴を読み込めませんでした';
+    const historyHeader = '検索履歴';
+
+    void stubAnySearch() {
+      when(() => useCase.call(
+            origin: any(named: 'origin'),
+            destinationStationName: any(named: 'destinationStationName'),
+          )).thenAnswer((_) async => route);
+    }
+
+    void verifyNoSearch() {
+      verifyNever(() => useCase.call(
+            origin: any(named: 'origin'),
+            destinationStationName: any(named: 'destinationStationName'),
+          ));
+    }
+
+    FakeSearchHistoryRepository withHistory() {
+      historyRepository = FakeSearchHistoryRepository(
+        initial: [
+          historyEntry(3, '東京'),
+          historyEntry(2, '渋谷'),
+          historyEntry(1, '新宿'),
+        ],
+      );
+      return historyRepository;
+    }
+
+    testWidgets('履歴があるとき、初期表示で履歴が新しい順に表示されること', (tester) async {
+      withHistory();
+      await pumpSearchScreen(tester);
+      await tester.pump();
+
+      expect(find.text(historyHeader), findsOneWidget);
+      final tokyo = tester.getTopLeft(find.text('東京駅')).dy;
+      final shibuya = tester.getTopLeft(find.text('渋谷駅')).dy;
+      final shinjuku = tester.getTopLeft(find.text('新宿駅')).dy;
+      expect(tokyo, lessThan(shibuya));
+      expect(shibuya, lessThan(shinjuku));
+    });
+
+    testWidgets('履歴が正常に読み込めているときは「履歴を読み込めませんでした」が表示されないこと', (tester) async {
+      withHistory();
+      await pumpSearchScreen(tester);
+      await tester.pump();
+
+      expect(find.text(loadFailedText), findsNothing);
+    });
+
+    testWidgets('履歴0件のときは履歴ヘッダーも表示されないこと', (tester) async {
+      await pumpSearchScreen(tester);
+      await tester.pump();
+
+      expect(find.text(historyHeader), findsNothing);
+      expect(find.text('すべて削除'), findsNothing);
+      expect(find.text(loadFailedText), findsNothing);
+    });
+
+    testWidgets('loadFailedのときは文言が表示され、検索は通常どおり行えること', (tester) async {
+      historyRepository.failFindAll = true;
+      stubAnySearch();
+      await pumpSearchScreen(tester);
+      await tester.pump();
+
+      expect(find.text(loadFailedText), findsOneWidget);
+
+      await tester.enterText(findDestinationField(), destinationStationName);
+      await tester.pump();
+      await tester.tap(findSearchButton());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(RouteResultCard), findsOneWidget);
+    });
+
+    testWidgets(
+      '履歴行（表示は「新宿駅」）をタップすると、入力欄に「新宿」が入り'
+      'destinationStationName: "新宿" で検索が1回実行されること',
+      (tester) async {
+        withHistory();
+        stubAnySearch();
+        await pumpSearchScreen(tester);
+        await tester.pump();
+
+        await tester.tap(find.text('新宿駅'));
+        await tester.pumpAndSettle();
+
+        final field = tester.widget<TextField>(findDestinationField());
+        expect(field.controller?.text, '新宿');
+        verify(() => useCase.call(
+              origin: origin,
+              destinationStationName: '新宿',
+            )).called(1);
+      },
+    );
+
+    testWidgets('オフライン中は履歴行をタップしても検索されないが、「×」で削除できること', (tester) async {
+      withHistory();
+      stubAnySearch();
+      await pumpSearchScreen(
+        tester,
+        connectivityStream: Stream.value(ConnectivityStatus.offline),
+      );
+      await tester.pump();
+
+      // オフラインでも履歴は閲覧できる。
+      expect(find.text('新宿駅'), findsOneWidget);
+
+      await tester.tap(find.text('新宿駅'), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      verifyNoSearch();
+
+      await tester.tap(find.byTooltip('新宿駅を履歴から削除'));
+      await tester.pumpAndSettle();
+      expect(find.text('新宿駅'), findsNothing);
+      expect(historyRepository.deletedIds, [1]);
+    });
+
+    testWidgets('現在地未取得中は履歴行をタップしても検索されないが、「×」で削除できること', (tester) async {
+      withHistory();
+      stubAnySearch();
+      await pumpSearchScreen(tester, locationPoint: null);
+      await tester.pump();
+
+      await tester.tap(find.text('新宿駅'), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      verifyNoSearch();
+
+      await tester.tap(find.byTooltip('新宿駅を履歴から削除'));
+      await tester.pumpAndSettle();
+      expect(find.text('新宿駅'), findsNothing);
+    });
+
+    testWidgets('loading中とsuccess時は履歴が表示されないこと', (tester) async {
+      withHistory();
+      final completer = Completer<Route>();
+      when(() => useCase.call(
+            origin: origin,
+            destinationStationName: destinationStationName,
+          )).thenAnswer((_) => completer.future);
+      await pumpSearchScreen(tester);
+      await tester.pump();
+      expect(find.text(historyHeader), findsOneWidget);
+
+      await tester.enterText(findDestinationField(), destinationStationName);
+      await tester.pump();
+      await tester.tap(findSearchButton());
+      await tester.pump();
+
+      // loading
+      expect(find.text(historyHeader), findsNothing);
+      expect(find.text('新宿駅'), findsNothing);
+
+      completer.complete(route);
+      await tester.pumpAndSettle();
+
+      // success
+      expect(find.byType(RouteResultCard), findsOneWidget);
+      expect(find.text(historyHeader), findsNothing);
+    });
+
+    testWidgets('notFound / error のときは履歴が表示されること', (tester) async {
+      withHistory();
+      when(() => useCase.call(
+            origin: origin,
+            destinationStationName: destinationStationName,
+          )).thenThrow(const RouteNotFoundException());
+      await pumpSearchScreen(tester);
+      await tester.pump();
+
+      await tester.enterText(findDestinationField(), destinationStationName);
+      await tester.pump();
+      await tester.tap(findSearchButton());
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('見つかりませんでした'), findsOneWidget);
+      expect(find.text(historyHeader), findsOneWidget);
+
+      when(() => useCase.call(
+            origin: origin,
+            destinationStationName: destinationStationName,
+          )).thenThrow(const RouteApiException('通信に失敗しました'));
+      await tester.tap(findSearchButton());
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('取得できませんでした'), findsOneWidget);
+      expect(find.text(historyHeader), findsOneWidget);
+    });
+
+    testWidgets('削除に失敗すると「履歴を削除できませんでした」のSnackBarが表示されること', (tester) async {
+      withHistory().failDelete = true;
+      await pumpSearchScreen(tester);
+      await tester.pump();
+
+      await tester.tap(find.byTooltip('新宿駅を履歴から削除'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('履歴を削除できませんでした'), findsOneWidget);
+      expect(find.byType(SnackBar), findsOneWidget);
+      // 失敗時は一覧を変えない。
+      expect(find.text('新宿駅'), findsOneWidget);
+    });
+
+    testWidgets('全件削除に失敗したときもSnackBarが表示されること', (tester) async {
+      withHistory().failDeleteAll = true;
+      await pumpSearchScreen(tester);
+      await tester.pump();
+
+      await tester.tap(find.text('すべて削除'));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('削除'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('履歴を削除できませんでした'), findsOneWidget);
     });
   });
 }

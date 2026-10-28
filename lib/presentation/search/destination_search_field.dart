@@ -8,7 +8,11 @@ class DestinationSearchField extends StatefulWidget {
     super.key,
     required this.onSubmit,
     required this.enabled,
+    this.controller,
   });
+
+  /// 未指定なら内部で生成・破棄する。指定時の破棄は呼び出し側の責務。
+  final TextEditingController? controller;
 
   /// 送信時に呼び出されるコールバック（引数は入力された目的駅名）。
   final ValueChanged<String> onSubmit;
@@ -22,11 +26,14 @@ class DestinationSearchField extends StatefulWidget {
 }
 
 class _DestinationSearchFieldState extends State<DestinationSearchField> {
-  final _controller = TextEditingController();
+  TextEditingController? _ownController;
+
+  TextEditingController get _controller =>
+      widget.controller ?? (_ownController ??= TextEditingController());
 
   @override
   void dispose() {
-    _controller.dispose();
+    _ownController?.dispose();
     super.dispose();
   }
 

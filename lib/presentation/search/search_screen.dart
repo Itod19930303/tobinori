@@ -4,6 +4,7 @@ import 'package:tobinori/application/connectivity/connectivity_status_provider.d
 import 'package:tobinori/presentation/common/offline_banner.dart';
 import 'package:tobinori/presentation/search/destination_search_field.dart';
 import 'package:tobinori/presentation/search/route_result_view.dart';
+import 'package:tobinori/presentation/search/search_history_list.dart';
 import 'package:tobinori/providers/location/current_location_provider.dart';
 import 'package:tobinori/providers/route/route_search_provider.dart';
 
@@ -25,11 +26,39 @@ import 'package:tobinori/providers/route/route_search_provider.dart';
 /// （設計判断。詳細は呼び出し元への実装報告を参照）。
 /// `routeSearchProvider`が`notFound`へ遷移したことを`ref.listen`で検知し、
 /// 画面上部にフラッシュメッセージ（`SnackBar`等）を表示する。
-class SearchScreen extends ConsumerWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends ConsumerState<SearchScreen> {
+  // 履歴タップで入力欄を外から書き換えるため、画面側で保持する。
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _searchFromHistory(String stationName) {
+    FocusScope.of(context).unfocus();
+    _controller.text = stationName;
+    ref
+        .read(routeSearchProvider.notifier)
+        .search(destinationStationName: stationName);
+  }
+
+  void _showDeleteFailed() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('履歴を削除できませんでした')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final connectivity = ref.watch(connectivityStatusProvider);
     final isOffline = connectivity.valueOrNull == ConnectivityStatus.offline;
 
@@ -42,6 +71,10 @@ class SearchScreen extends ConsumerWidget {
     // 優先度判定（設計書5章備考）: offline/locationUnavailableが同時に成立する場合、
     // オフライン表示を優先し、現在地未取得の案内は表示しない。
     final canSearch = !isOffline && !isLocationUnavailable && !isLoading;
+
+    // 結果表示中（loading/success）は結果を主役にするため履歴を出さない。
+    final showHistory = routeSearchState.status != RouteSearchStatus.loading &&
+        routeSearchState.status != RouteSearchStatus.success;
 
     ref.listen<RouteSearchState>(routeSearchProvider, (previous, next) {
       if (next.status == RouteSearchStatus.notFound &&
@@ -78,6 +111,7 @@ class SearchScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: DestinationSearchField(
+                controller: _controller,
                 enabled: canSearch,
                 onSubmit: (destinationStationName) {
                   ref
@@ -86,9 +120,26 @@ class SearchScreen extends ConsumerWidget {
                 },
               ),
             ),
-            Expanded(
-              child: RouteResultView(state: routeSearchState),
-            ),
+            if (showHistory)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    RouteResultView(state: routeSearchState),
+                    Expanded(
+                      child: SearchHistoryList(
+                        enabled: canSearch,
+                        onSelect: _searchFromHistory,
+                        onDeleteFailed: _showDeleteFailed,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Expanded(
+                child: RouteResultView(state: routeSearchState),
+              ),
           ],
         ),
       ),
