@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:tobinori/domain/location/location_failure_reason.dart';
 import 'package:tobinori/domain/location/location_state.dart';
 
+/// 現在地の取得失敗理由に対応するユーザー向けメッセージを返す。
+///
+/// `LocationStatusBanner`と検索画面（`SearchScreen`）で文言を共有する。
+String locationFailureMessage(LocationFailureReason reason) {
+  switch (reason) {
+    case LocationFailureReason.serviceDisabled:
+      return '位置情報サービスがオフになっています。端末の設定から有効にしてください。';
+    case LocationFailureReason.permissionDenied:
+      return '位置情報の利用が許可されていません。';
+    case LocationFailureReason.permissionDeniedForever:
+      return '位置情報の利用が許可されていません。アプリの設定から位置情報を許可してください。';
+    case LocationFailureReason.timeout:
+      return '現在地の取得に時間がかかっています。';
+    case LocationFailureReason.unknown:
+      return '現在地を取得できませんでした。';
+  }
+}
+
 /// `LocationState`を受け取り、状態に応じたメッセージと
 /// 「現在地を再取得」ボタン（または「設定を開く」ボタン）を表示するWidget。
 ///
@@ -18,21 +36,6 @@ class LocationStatusBanner extends StatelessWidget {
   final LocationState state;
   final VoidCallback onRefetch;
   final VoidCallback onOpenSettings;
-
-  String _messageFor(LocationFailureReason reason) {
-    switch (reason) {
-      case LocationFailureReason.serviceDisabled:
-        return '位置情報サービスがオフになっています。端末の設定から有効にしてください。';
-      case LocationFailureReason.permissionDenied:
-        return '位置情報の利用が許可されていません。';
-      case LocationFailureReason.permissionDeniedForever:
-        return '位置情報の利用が許可されていません。アプリの設定から位置情報を許可してください。';
-      case LocationFailureReason.timeout:
-        return '現在地の取得に時間がかかっています。';
-      case LocationFailureReason.unknown:
-        return '現在地を取得できませんでした。';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +71,7 @@ class LocationStatusBanner extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Expanded(child: Text(_messageFor(reason))),
+              Expanded(child: Text(locationFailureMessage(reason))),
               const SizedBox(width: 8),
               if (reason == LocationFailureReason.permissionDeniedForever)
                 ElevatedButton(
