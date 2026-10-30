@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tobinori/application/connectivity/connectivity_status_provider.dart';
+import 'package:tobinori/domain/location/location_failure_reason.dart';
+import 'package:tobinori/domain/location/location_state.dart';
 import 'package:tobinori/presentation/common/offline_banner.dart';
 import 'package:tobinori/presentation/search/destination_search_field.dart';
 import 'package:tobinori/presentation/search/route_result_view.dart';
 import 'package:tobinori/presentation/search/search_history_list.dart';
+import 'package:tobinori/domain/location/location_point.dart';
+import 'package:tobinori/presentation/widgets/location_status_banner.dart'
+    show locationFailureMessage;
+import 'package:tobinori/providers/location/current_address_provider.dart';
 import 'package:tobinori/providers/location/current_location_provider.dart';
 import 'package:tobinori/providers/route/route_search_provider.dart';
 
@@ -17,13 +23,13 @@ import 'package:tobinori/providers/route/route_search_provider.dart';
 /// F-01の現在地状態表示（現在地未取得時の案内文・再取得アクション）も
 /// 本画面がホスト画面として統合する。
 ///
-/// 現在地の状態表示については、`LocationStatusBanner`（F-01が提供する
-/// `currentLocationProvider`のフル状態を購読するWidget）をそのまま再利用すると、
-/// 「取得中」表示（`CircularProgressIndicator`、ティッカー駆動のアニメーション）が
-/// `pumpAndSettle`ベースのWidgetテストで無限に停止しない問題を引き起こすため、
-/// 本画面では`currentLocationPointProvider`（`LocationPoint?`、派生Provider）に
-/// 基づく単純な案内文＋AppBarの再取得アクションという最小構成に留める
-/// （設計判断。詳細は呼び出し元への実装報告を参照）。
+/// 現在地の状態表示については、`LocationStatusBanner`（F-01が提供するWidget）を
+/// そのまま再利用すると、「取得中」表示（`CircularProgressIndicator`、
+/// ティッカー駆動のアニメーション）が`pumpAndSettle`ベースのWidgetテストで
+/// 無限に停止しない問題を引き起こすため、本画面ではスピナーを使わず、
+/// `currentLocationProvider`の状態（取得中／失敗理由）ごとの案内文＋
+/// AppBarの再取得アクションという最小構成に留める。
+/// 取得中に「取得できませんでした」と出さないよう、状態で文言を出し分ける。
 /// `routeSearchProvider`が`notFound`へ遷移したことを`ref.listen`で検知し、
 /// 画面上部にフラッシュメッセージ（`SnackBar`等）を表示する。
 class SearchScreen extends ConsumerStatefulWidget {
@@ -62,6 +68,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final connectivity = ref.watch(connectivityStatusProvider);
     final isOffline = connectivity.valueOrNull == ConnectivityStatus.offline;
 
+    final locationState = ref.watch(currentLocationProvider);
     final locationPoint = ref.watch(currentLocationPointProvider);
     final isLocationUnavailable = locationPoint == null;
 
@@ -103,10 +110,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const OfflineBanner(),
-            if (!isOffline && isLocationUnavailable)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text('現在地を取得できませんでした。位置情報の設定を確認してください。'),
+            if (!isOffline)
+              _LocationStatusMessage(
+                state: locationState,
+                onOpenSettings: () =>
+                    ref.read(locationRepositoryProvider).openAppSettings(),
               ),
             Padding(
               padding: const EdgeInsets.all(16),
@@ -145,4 +153,76 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
     );
   }
+}
+
+/// 現在地の取得状態に応じた案内文を出すWidget。
+///
+/// 取得中（初期・取得中）は「取得しています」、失敗時は原因別の文言を出し、
+/// 取得に成功したときは何も出さない。スピナーは使わない（クラス冒頭のコメント参照）。
+class _LocationStatusMessage extends StatelessWidget {
+  const _LocationStatusMessage({
+    required this.state,
+    required this.onOpenSettings,
+  });
+
+  final LocationState state;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (state) {
+      LocationInitial() || LocationLoading() => const Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('現在地を取得しています…'),
+        ),
+      LocationLoaded(:final point) => _CurrentLocationLabel(point: point),
+      LocationFailed(:final reason) => Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Expanded(child: Text(locationFailureMessage(reason))),
+              if (reason == LocationFailureReason.permissionDeniedForever) ...[
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: onOpenSettings,
+                  child: const Text('設定を開く'),
+                ),
+              ],
+            ],
+          ),
+        ),
+    };
+  }
+}
+
+/// 取得済みの現在地を「現在地: 住所」の形で表示するWidget。
+///
+/// 住所の取得中は「住所を取得しています…」、住所を取得できなかったときは
+/// 座標（小数4桁）にフォールバックする。スピナーは使わない。
+class _CurrentLocationLabel extends ConsumerWidget {
+  const _CurrentLocationLabel({required this.point});
+
+  final LocationPoint point;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final address = ref.watch(currentAddressProvider);
+    final text = address.when(
+      loading: () => '住所を取得しています…',
+      error: (_, _) => _coordinates(point),
+      data: (value) => value ?? _coordinates(point),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Text(
+        '現在地: $text',
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+      ),
+    );
+  }
+
+  static String _coordinates(LocationPoint point) =>
+      '${point.latitude.toStringAsFixed(4)}, ${point.longitude.toStringAsFixed(4)}';
 }
